@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String             @id @default(uuid())
+  name            String
+  email           String             @unique
+  profile         String
+  personalGroup   UserPersonalFile[]
+  member          Group[]            @relation("members")
+  admin           Group[]            @relation("admins")
+  requests        Request[]
+  groupFiles      GroupFile[]
+  GroupMembership GroupMembership[]
+}
+
+model Request {
+  id        String   @id @default(uuid())
+  role      String
+  groupName String
+  group     Group    @relation(fields: [groupId], references: [id])
+  groupId   String
+  date      DateTime @default(now())
+  requester User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model UserPersonalFile {
+  id        String    @id @default(uuid())
+  title     String
+  filetype  String
+  url       String
+  favourite Boolean   @default(false)
+  trash     Boolean   @default(false)
+  trashtime DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model Group {
+  id              String            @id @default(uuid())
+  name            String
+  admins          User[]            @relation("admins")
+  members         User[]            @relation("members")
+  createdAt       DateTime          @default(now())
+  createdBy       String
+  files           GroupFile[]
+  requests        Request[]
+  GroupMembership GroupMembership[]
+}
+
+model GroupFile {
+  id          String    @id @default(uuid())
+  title       String
+  filetype    String
+  url         String
+  createdAt   DateTime  @default(now())
+  favourite   Boolean   @default(false)
+  trash       Boolean   @default(false)
+  trashtime   DateTime?
+  group       Group     @relation(fields: [groupId], references: [id])
+  groupId     String
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdById String
+}
+
+model GroupMembership {
+  id       String   @id @default(uuid())
+  userId   String
+  groupId  String
+  joinedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+  group    Group    @relation(fields: [groupId], references: [id])
+}
