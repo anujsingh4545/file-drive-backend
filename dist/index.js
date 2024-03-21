@@ -12,6 +12,9 @@ const requestRoutes_1 = __importDefault(require("./routes/requestRoutes"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+app.get("/", (req, res) => {
+    res.json("Hello World");
+});
 app.use("/api/v1/user", userRoutes_1.default);
 app.use("/api/v1/personal", personalRoutes_1.default);
 app.use("/api/v1/group", groupRoutes_1.default);

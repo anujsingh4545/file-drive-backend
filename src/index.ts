@@ -1,4 +1,4 @@
-import express from "express";
+import express, {Request, Response} from "express";
 import cors from "cors";
 
 import UserRoute from "./routes/userRoutes";
@@ -10,6 +10,10 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.get("/", (req: Request, res: Response) => {
+  res.json("Hello World");
+});
 
 app.use("/api/v1/user", UserRoute);
 app.use("/api/v1/personal", PersonalRoute);
